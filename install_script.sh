@@ -365,3 +365,21 @@ _install_zoom() {
 }
 
 install_func zoom _install_zoom
+
+_install_docker() {
+	if _which docker; then
+		return 0
+	fi
+
+	if _is_on_mac; then
+		brew install --cask docker
+	fi
+
+	if _is_on_arch; then
+		sudo pacman -S --noconfirm docker
+		sudo systemctl enable --now docker
+		sudo usermod -aG docker $USER
+		msg_fenced "You may need to log out and back in for docker group membership to take effect"
+	fi
+}
+install_func docker _install_docker
