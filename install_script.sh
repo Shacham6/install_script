@@ -100,6 +100,19 @@ nl() {
 	printf "\n"
 }
 
+install_func() {
+	name=${1}
+	msg_installing ${1}
+	printf "\n"
+	if ${2} ; then
+		msg_install_ok ${1}
+		return 0
+
+	fi
+	msg_install_err ${1}
+	return 1
+}
+
 if _is_on_mac; then  # Making the brew installs non-interactive
 	export NONINTERACTIVE=1
 fi
@@ -130,15 +143,27 @@ fi
 
 # Installing git.
 
-if _not_exists git; then
-	msg_installing git
-	_on_mac brew install git && msg_install_ok git || msg_install_err git
-
+_install_git() {
+	if  _which git ; then
+		return 0
+	fi
+	_on_mac brew install git
 	if _is_on_arch; then
 		sudo pacman -Syu --noconfirm
 		sudo pacman -S --noconfirm git
 	fi
-fi
+}
 
+install_func git _install_git
 
+_install_stow() {
+	if _which stow; then
+		return 0
+	fi
+
+	_on_mac brew install stow
+	_on_arch yay -S --noconfirm stow
+}
+
+install_func stow _install_stow
 
