@@ -28,7 +28,7 @@ _is_on_arch() {
 }
 
 _on_arch() {
-	if [[ "$(ostype)" -eq "arch" ]]; then
+	if [[ "$(ostype)" = "arch" ]]; then
 		${*}
 	fi
 }
@@ -53,7 +53,7 @@ _not_exists() {
 	return 0
 }
 
-_when_missing() {
+_on_missing() {
 	if _not_exists ${1}; then
 		${*:2}
 	fi
@@ -121,7 +121,7 @@ fi
 
 if _is_on_mac; then
 	msg_installing brew
-	_when_missing brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+	_on_missing brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	msg_fenced "you might need to do extra things like add this in path"
 	msg_install_ok brew
 fi
@@ -183,7 +183,7 @@ _install_gh() {
 _install_gh_auth() {
 	if gh auth status >/dev/null 2>/dev/null ; then
 		msg_fenced "github cli is configured"
-		exit 0
+		return 0
 	fi
 
 
@@ -241,3 +241,89 @@ _install_fzf() {
 	_on_arch yay -S fzf-bin
 }
 install_func fzf _install_fzf
+
+_install_dotfiles() {
+	if ! [[ -d ~/dotfiles/ ]]; then
+		git clone git@github.com:Shacham6/dotfiles.git ~/dotfiles
+	fi
+
+	echo "placing dotfiles"
+	pushd ~/dotfiles
+	if _is_on_mac; then
+		echo "placing mac things"
+		./stow.sh zsh
+		./stow.sh yabai
+		./stow.sh tmux
+		./stow.sh skhd
+		./stow.sh sketchybar
+		./stow.sh nvim
+		./stow.sh ghostty_mac
+		./stow.sh aerospace
+		./stow.sh ghostty_mac
+		./stow.sh wezterm_mac
+	fi
+
+	if _is_on_arch; then
+		if [[ -d ~/.config/waybar/ ]]; then
+			mv -f ~/.config/waybar/ ~/.config/waybar-bak
+			./stow.sh waybar
+		fi
+
+		if [[ -d ~/.config/tmux ]]; then
+			mv -f ~/.config/tmux ~/.config/tmux-bak
+			./stow.sh tmux
+		fi
+
+		if [[ -d ~/.config/nvim/ ]]; then
+			mv -f ~/.config/nvim ~/.config/nvim-bak
+			./stow.sh nvim
+		fi
+
+		if [[ -d ~/.config/ghostty/ ]]; then
+			mv -f ~/.config/ghostty/ ~/.config/ghostty-bak
+			./stow.sh ghostty_omarchy
+		fi
+
+		if [[ -d ~/.config/hypr/ ]]; then
+			mv -f ~/.config/hypr ~/.config/hypr-bak
+			./stow.sh hypr_omarchy
+		fi
+
+		./stow.sh wezterm_arch
+	fi
+	popd
+}
+install_func dotfiles _install_dotfiles
+
+_install_asdf() {
+	_on_missing asdf _on_mac brew install asdf
+	_on_missing asdf _on_arch yay -S --noconfirm asdf
+
+	msg_fenced "you will need to add 'export PATH=\${PATH}:\${HOME}/.asdf/shims' to your zshrc"
+}
+
+install_func asdf _install_asdf
+
+_install_nvim() {
+	_on_missing nvim _on_mac brew install neovim
+	_on_missing nvim _on_arch yay -S --noconfirm neovim
+}
+
+install_func neovim _install_nvim
+
+_install_tmux() {
+	_on_missing tmux _on_mac brew install tmux
+	_on_missing tmux _on_arch yay -S --noconfirm tmux
+
+
+}
+
+_install_tmux_tpm() {
+	if  [[ -d ~/.tmux/plugins/tpm/ ]]; then
+		return 0
+	fi
+   git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+   msg_fenced "Might need to enter tmux and press <C-Space>I "
+}
+install_func tmux _install_tmux \
+	&& install_func "tmux plugin manager" _install_tmux_tpm
