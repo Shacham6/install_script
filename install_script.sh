@@ -135,8 +135,10 @@ if _not_exists git; then
 	_on_mac brew install git && msg_install_ok git || msg_install_err git
 
 	if _is_on_arch; then
-		sudo pacman -Syu --no-confirm
-		sudo pacman -S --no-confirm git
+		sudo pacman -Syu --noconfirm
+		sudo pacman -S --noconfirm git
 	fi
 fi
+
+
 
