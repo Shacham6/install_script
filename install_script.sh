@@ -325,6 +325,7 @@ _install_tmux_tpm() {
    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
    msg_fenced "Might need to enter tmux and press <C-Space>I "
 }
+
 install_func tmux _install_tmux \
 	&& install_func "tmux plugin manager" _install_tmux_tpm
 
@@ -383,3 +384,47 @@ _install_docker() {
 	fi
 }
 install_func docker _install_docker
+
+_install_yabai() {
+	if _which yabai; then
+		return 0
+	fi
+	brew install koekeishiya/formulae/yabai
+
+	yabai --install-service
+
+	MESSAGE=$(cat<<EOT
+yabai is installed but not yet active until you set the relevant sudoers things.
+consult the official guide here: https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)
+afterwards activate yabai (& skhd) by running 'yabai --start-service && skhd --start-service'
+EOT
+)
+
+	msg_fenced "${MESSAGE}"
+}
+
+_on_mac install_func yabai _install_yabai
+
+_install_skhd() {
+	if _which skhd; then
+		return 0
+	fi
+	brew install koekeishiya/formulae/skhd
+
+	skhd --install-service
+	msg_fenced "when ready, run 'skhd --start-service'"
+}
+
+_on_mac install_func skhd _install_skhd
+
+_install_sketchybar() {
+	if _which sketchybar; then
+		return 0
+	fi
+
+	brew tap FelixKratz/formulae
+	brew install sketchybar
+	brew services start sketchybar
+}
+
+_on_mac install_func sketchybar _install_sketchybar
