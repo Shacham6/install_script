@@ -33,15 +33,42 @@ _not_exists() {
 	return 0
 }
 
-title() {
+_screen_fence() {
 	local width=$(tput cols)
 	printf "\n"
 	printf '%*s' "$width" '' | tr ' ' '='
-	printf "\n  %s\n" "${*}"
-	printf '%*s' "$width" '' | tr ' ' '='
-	printf "\n\n"
+	printf "\n"
 }
 
-title "installing git..."
+yellow() {
+	printf '\033[33m%s\033[0m' "${*}"
+}
+green() {
+	printf '\033[32m%s\033[0m' "${*}"
+}
+red() {
+	printf '\033[31m%s\033[0m' "${*}"
+}
 
+msg_installing() {
+	printf " ## ----> Installing $(yellow ${1})...\n"
+}
 
+msg_install_ok() {
+	printf " ## ----> $(yellow ${1}) was $(green installed successfully)\n"
+}
+
+msg_install_err() {
+	printf " ## ----> $(yellow ${1}) installation has $(red failed)\n"
+}
+
+msg_fenced() {
+	_screen_fence
+	printf "${*}"
+	printf "\n"
+	_screen_fence
+}
+
+msg_installing "git"
+msg_install_ok "git"
+msg_install_err "git"
