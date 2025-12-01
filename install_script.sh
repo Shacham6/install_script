@@ -439,3 +439,9 @@ _install_yq() {
 	_on_missing yq _on_arch yay -S --noconfirm yq
 }
 install_func yq _install_yq
+
+_install_rg() {
+	_on_missing rg _on_mac brew install ripgrep
+	_on_missing rg _on_arch yay -S --noconfirm ripgrep
+}
+install_func rg _install_rg
