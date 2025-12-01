@@ -433,3 +433,8 @@ _install_sketchybar() {
 
 _on_mac install_func sketchybar _install_sketchybar
 
+_install_yq() {
+	_on_missing yq _on_mac brew install yq
+	_on_missing yq _on_arch yay -S --noconfirm yq
+}
+install_func yq _install_yq
