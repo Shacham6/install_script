@@ -348,5 +348,20 @@ _install_make_zsh_default_shell() {
 	chsh -s $(which zsh)
 }
 
+_install_oh_my_zsh() {
+	if [[ -d ~/.oh-my-zsh ]]; then
+		return 0
+	fi
+
+	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+}
+
 install_func zsh _install_zsh \
-	&& install_func "make-zsh-default-shell" _install_make_zsh_default_shell
+	&& install_func "make-zsh-default-shell" _install_make_zsh_default_shell \
+	&& install_func "oh-my-zsh" _install_oh_my_zsh
+
+_install_zoom() {
+	_on_missing zoom _on_mac brew install zoom
+}
+
+install_func zoom _install_zoom
