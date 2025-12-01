@@ -327,3 +327,26 @@ _install_tmux_tpm() {
 }
 install_func tmux _install_tmux \
 	&& install_func "tmux plugin manager" _install_tmux_tpm
+
+_install_zsh() {
+	_on_missing zsh _on_mac brew install zsh
+	_on_missing zsh _on_arch yay -S --noconfirm zsh
+}
+
+_install_make_zsh_default_shell() {
+	if ! _which zsh ; then
+		printf " ## ----> Can't find zsh installation, so can't make it default"
+		return 1
+	fi
+
+	# Assuming that the current shell is the default shell.
+	if [ "$SHELL" = "$(which zsh)" ]; then
+		printf " ## ----> zsh is already the default shell\n"
+		return 0
+	fi
+
+	chsh -s $(which zsh)
+}
+
+install_func zsh _install_zsh \
+	&& install_func "make-zsh-default-shell" _install_make_zsh_default_shell
