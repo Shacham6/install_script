@@ -78,6 +78,7 @@ red() {
 	printf '\033[31m%s\033[0m' "${*}"
 }
 
+
 msg_installing() {
 	printf " ## ----> Installing $(yellow ${1})..."
 }
@@ -119,7 +120,7 @@ if _is_on_mac; then  # Making the brew installs non-interactive
 	export NONINTERACTIVE=1
 fi
 
-# Installing Brew on mac.
+## Installation functions
 
 _install_brew() {
 	if ! _is_on_mac; then
@@ -128,7 +129,6 @@ _install_brew() {
 	_on_missing brew /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	msg_fenced "you might need to do extra things like add this in path"
 }
-_run brew _install_brew
 
 _install_yay() {
 	if ! _is_on_arch; then
@@ -146,10 +146,6 @@ _install_yay() {
 	_which yay
 }
 
-_run yay _install_yay
-
-# Installing git.
-
 _install_git() {
 	if  _which git ; then
 		return 0
@@ -161,8 +157,6 @@ _install_git() {
 	fi
 }
 
-_run git _install_git
-
 _install_stow() {
 	if _which stow; then
 		return 0
@@ -171,8 +165,6 @@ _install_stow() {
 	_on_mac brew install stow
 	_on_arch yay -S --noconfirm stow
 }
-
-_run stow _install_stow
 
 _install_gh() {
 	if _which gh; then
@@ -200,9 +192,6 @@ _install_gh_auth() {
 	gh auth setup-git
 }
 
-_run gh _install_gh \
-	&& _run "gh authentication" _install_gh_auth
-
 _install_zen_browser() {
 	if _which zen-browser; then
 		return 0
@@ -211,7 +200,6 @@ _install_zen_browser() {
 	_on_mac brew install --cask zen-browser
 	_on_arch yay -S --noconfirm zen-browser-bin
 }
-_run zen-browser _install_zen_browser
 
 _install_ghostty() {
 	if _which ghostty; then
@@ -221,7 +209,6 @@ _install_ghostty() {
 	_on_mac brew install --cask ghostty
 	_on_arch yay -S --noconfirm ghostty
 }
-_run ghostty _install_ghostty
 
 _install_tailscale() {
 	if which tailscale; then
@@ -239,7 +226,6 @@ _install_tailscale() {
 		sudo systemctl enable --now tailscaled
 	fi
 }
-_run tailscale _install_tailscale
 
 _install_fzf() {
 	if which fzf; then
@@ -248,7 +234,6 @@ _install_fzf() {
 	_on_mac brew install fzf
 	_on_arch yay -S fzf-bin
 }
-_run fzf _install_fzf
 
 _install_dotfiles() {
 	if ! [[ -d ~/dotfiles/ ]]; then
@@ -301,7 +286,6 @@ _install_dotfiles() {
 	fi
 	popd
 }
-_run dotfiles _install_dotfiles
 
 _install_asdf() {
 	_on_missing asdf _on_mac brew install asdf
@@ -310,14 +294,10 @@ _install_asdf() {
 	msg_fenced "you will need to add 'export PATH=\${PATH}:\${HOME}/.asdf/shims' to your zshrc"
 }
 
-_run asdf _install_asdf
-
 _install_nvim() {
 	_on_missing nvim _on_mac brew install neovim
 	_on_missing nvim _on_arch yay -S --noconfirm neovim
 }
-
-_run neovim _install_nvim
 
 _install_tmux() {
 	_on_missing tmux _on_mac brew install tmux
@@ -331,9 +311,6 @@ _install_tmux_tpm() {
    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
    msg_fenced "Might need to enter tmux and press <C-Space>I "
 }
-
-_run tmux _install_tmux \
-	&& _run "tmux plugin manager" _install_tmux_tpm
 
 _install_zsh() {
 	_on_missing zsh _on_mac brew install zsh
@@ -363,15 +340,9 @@ _install_oh_my_zsh() {
 	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 }
 
-_run zsh _install_zsh \
-	&& _run "make-zsh-default-shell" _install_make_zsh_default_shell \
-	&& _run "oh-my-zsh" _install_oh_my_zsh
-
 _install_zoom() {
 	_on_missing zoom _on_mac brew install zoom
 }
-
-_run zoom _install_zoom
 
 _install_docker() {
 	if _which docker; then
@@ -389,9 +360,11 @@ _install_docker() {
 		msg_fenced "You may need to log out and back in for docker group membership to take effect"
 	fi
 }
-_run docker _install_docker
 
 _install_yabai() {
+	if ! _is_on_mac; then
+		return 0
+	fi
 	if _which yabai; then
 		return 0
 	fi
@@ -409,9 +382,10 @@ EOT
 	msg_fenced "${MESSAGE}"
 }
 
-_on_mac install_func yabai _install_yabai
-
 _install_skhd() {
+	if ! _is_on_mac; then
+		return 0
+	fi
 	if _which skhd; then
 		return 0
 	fi
@@ -421,15 +395,15 @@ _install_skhd() {
 	msg_fenced "when ready, run 'skhd --start-service'"
 }
 
-_on_mac install_func skhd _install_skhd
-
 _install_fonts() {
 	_on_mac brew install font-jetbrains-mono-nerd-font
 	_on_mac brew install font-hack-nerd-font
 }
-_run fonts _install_fonts
 
 _install_sketchybar() {
+	if ! _is_on_mac; then
+		return 0
+	fi
 	if _which sketchybar; then
 		return 0
 	fi
@@ -439,16 +413,41 @@ _install_sketchybar() {
 	brew services start sketchybar
 }
 
-_on_mac install_func sketchybar _install_sketchybar
-
 _install_yq() {
 	_on_missing yq _on_mac brew install yq
 	_on_missing yq _on_arch yay -S --noconfirm yq
 }
-_run yq _install_yq
 
 _install_rg() {
 	_on_missing rg _on_mac brew install ripgrep
 	_on_missing rg _on_arch yay -S --noconfirm ripgrep
 }
+
+## Run installations
+
+_run brew _install_brew
+_run yay _install_yay
+_run git _install_git
+_run stow _install_stow
+_run gh _install_gh \
+	&& _run "gh authentication" _install_gh_auth
+_run zen-browser _install_zen_browser
+_run ghostty _install_ghostty
+_run tailscale _install_tailscale
+_run fzf _install_fzf
+_run dotfiles _install_dotfiles
+_run asdf _install_asdf
+_run neovim _install_nvim
+_run tmux _install_tmux \
+	&& _run "tmux plugin manager" _install_tmux_tpm
+_run zsh _install_zsh \
+	&& _run "make-zsh-default-shell" _install_make_zsh_default_shell \
+	&& _run "oh-my-zsh" _install_oh_my_zsh
+_run zoom _install_zoom
+_run docker _install_docker
+_run yabai _install_yabai
+_run skhd _install_skhd
+_run fonts _install_fonts
+_run sketchybar _install_sketchybar
+_run yq _install_yq
 _run rg _install_rg
