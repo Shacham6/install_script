@@ -223,6 +223,7 @@ _install_tailscale() {
 
 	if _is_on_mac; then
 		brew install --formula tailscale
+		brew install tailscale-app
 		sudo brew services start tailscale
 	fi
 
