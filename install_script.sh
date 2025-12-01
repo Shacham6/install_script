@@ -167,3 +167,77 @@ _install_stow() {
 
 install_func stow _install_stow
 
+_install_gh() {
+	if _which gh; then
+		return 0
+	fi
+
+	_on_mac brew install gh
+	_on_arch yay -S --noconfirm github-cli-bin
+	if ! _which gh; then
+		echo "Attempted installing gh but I can't see it in path. something might be wrong"
+		return 1
+	fi
+}
+
+_install_gh_auth() {
+	if gh auth status >/dev/null 2>/dev/null ; then
+		msg_fenced "github cli is configured"
+		exit 0
+	fi
+
+
+# echo "==== IN ORDER TO CLONE DOTFILES LATER, YOU WILL NEED TO LOG IN TO YOUR GITHUB ACCOUNT ===="
+	echo " If you need to quit for now in order to generate ssh keys, you can. Simply re-do the installation of the machine and you'll be back here in no time."
+	gh auth login -p ssh --hostname github.com
+	gh auth setup-git
+}
+
+install_func gh _install_gh \
+	&& install_func "gh authentication" _install_gh_auth
+
+_install_zen_browser() {
+	if _which zen-browser; then
+		return 0
+	fi
+
+	_on_mac brew install --cask zen-browser
+	_on_arch yay -S --noconfirm zen-browser-bin
+}
+install_func zen-browser _install_zen_browser
+
+_install_ghostty() {
+	if _which ghostty; then
+		return 0
+	fi
+
+	_on_mac brew install --cask ghostty
+	_on_arch yay -S --noconfirm ghostty
+}
+install_func ghostty _install_ghostty
+
+_install_tailscale() {
+	if which tailscale; then
+		return 0
+	fi
+
+	if _is_on_mac; then
+		brew install --formula tailscale
+		sudo brew services start tailscale
+	fi
+
+	if _is_on_arch; then
+		sudo pacman -S --noconfirm tailscale
+		sudo systemctl enable --now tailscaled
+	fi
+}
+install_func tailscale _install_tailscale
+
+_install_fzf() {
+	if which fzf; then
+		return 0
+	fi
+	_on_mac brew install fzf
+	_on_arch yay -S fzf-bin
+}
+install_func fzf _install_fzf
