@@ -314,8 +314,6 @@ install_func neovim _install_nvim
 _install_tmux() {
 	_on_missing tmux _on_mac brew install tmux
 	_on_missing tmux _on_arch yay -S --noconfirm tmux
-
-
 }
 
 _install_tmux_tpm() {
@@ -417,6 +415,12 @@ _install_skhd() {
 
 _on_mac install_func skhd _install_skhd
 
+_install_fonts() {
+	_on_mac brew install font-jetbrains-mono-nerd-font
+	_on_mac brew install font-hack-nerd-font
+}
+install_func fonts _install_fonts
+
 _install_sketchybar() {
 	if _which sketchybar; then
 		return 0
@@ -429,7 +433,3 @@ _install_sketchybar() {
 
 _on_mac install_func sketchybar _install_sketchybar
 
-_install_fonts() {
-	_on_mac brew install font-jetbrains-mono-nerd-font
-}
-install_func fonts _install_fonts
