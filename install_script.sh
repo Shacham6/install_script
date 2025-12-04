@@ -436,6 +436,11 @@ _install_htop() {
 	_on_missing htop _on_arch yay -S --noconfirm htop
 }
 
+_install_fd() {
+	_on_missing fd _on_mac brew install fd
+	_on_missing fd _on_arch yay -S --noconfirm fd
+}
+
 ## Run installations
 
 _run brew _install_brew
@@ -465,3 +470,4 @@ _run sketchybar _install_sketchybar
 _run yq _install_yq
 _run rg _install_rg
 _run htop _install_htop
+_run fd _install_fd
