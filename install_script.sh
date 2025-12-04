@@ -423,6 +423,11 @@ _install_rg() {
 	_on_missing rg _on_arch yay -S --noconfirm ripgrep
 }
 
+_install_htop() {
+	_on_missing htop _on_mac brew install htop
+	_on_missing htop _on_arch yay -S --noconfirm htop
+}
+
 ## Run installations
 
 _run brew _install_brew
@@ -451,3 +456,4 @@ _run fonts _install_fonts
 _run sketchybar _install_sketchybar
 _run yq _install_yq
 _run rg _install_rg
+_run htop _install_htop
