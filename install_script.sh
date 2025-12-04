@@ -55,6 +55,10 @@ _not_exists() {
 	return 0
 }
 
+_brew_is_installed() {
+	brew info "${1}" >/dev/null 2>/dev/null
+}
+
 _on_missing() {
 	if _not_exists ${1}; then
 		${*:2}
@@ -193,12 +197,13 @@ _install_gh_auth() {
 }
 
 _install_zen_browser() {
-	if _which zen-browser; then
-		return 0
+	if _is_on_mac && ! _brew_is_installed zen-browser; then
+		brew install --cask zen-browser
 	fi
 
-	_on_mac brew install --cask zen-browser
-	_on_arch yay -S --noconfirm zen-browser-bin
+	if _is_on_arch && ! _which zen-browser; then
+		yay -S --noconfirm zen-browser-bin
+	fi
 }
 
 _install_ghostty() {
@@ -341,7 +346,10 @@ _install_oh_my_zsh() {
 }
 
 _install_zoom() {
-	_on_missing zoom _on_mac brew install zoom
+	if _is_on_mac && ! _brew_is_installed zoom; then
+		brew install zoom
+	fi
+	# _on_missing zoom _on_mac brew install zoom
 }
 
 _install_docker() {
