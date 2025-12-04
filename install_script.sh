@@ -216,7 +216,7 @@ _install_ghostty() {
 }
 
 _install_tailscale() {
-	if which tailscale; then
+	if _which tailscale; then
 		return 0
 	fi
 
@@ -233,7 +233,7 @@ _install_tailscale() {
 }
 
 _install_fzf() {
-	if which fzf; then
+	if _which fzf; then
 		return 0
 	fi
 	_on_mac brew install fzf
