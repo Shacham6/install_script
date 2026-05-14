@@ -441,6 +441,11 @@ _install_fd() {
 	_on_missing fd _on_arch yay -S --noconfirm fd
 }
 
+_install_jj() {
+	_on_missing jj _on_mac brew install jj
+	_on_missing jj _on_arch yay -S jujutsu-git
+}
+
 ## Run installations
 
 _run brew _install_brew
@@ -471,3 +476,4 @@ _run yq _install_yq
 _run rg _install_rg
 _run htop _install_htop
 _run fd _install_fd
+_run jj _install_jj
