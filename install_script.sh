@@ -446,6 +446,11 @@ _install_jj() {
 	_on_missing jj _on_arch yay -S jujutsu-git
 }
 
+_install_delta() {
+	_on_missing delta _on_mac brew install delta
+	_on_missing delta _on_arch pacman -S git-delta
+}
+
 ## Run installations
 
 _run brew _install_brew
