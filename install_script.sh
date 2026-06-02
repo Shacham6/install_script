@@ -443,7 +443,8 @@ _install_fd() {
 
 _install_jj() {
 	_on_missing jj _on_mac brew install jj
-	_on_missing jj _on_arch yay -S jujutsu-git
+	# _on_missing jj _on_arch yay -S jujutsu-git
+	_on_missing jj _on_arch yay -S jujutsu
 }
 
 _install_delta() {
