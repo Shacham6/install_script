@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -euo pipefail
 
@@ -41,7 +41,7 @@ _which() {
 		exit 1
 	fi
 
-	which -s "${*}" >/dev/null 2>/dev/null
+	command -v "${1}" >/dev/null 2>&1
 }
 
 _not_exists() {
@@ -55,8 +55,8 @@ _not_exists() {
 	return 0
 }
 
-_brew_is_installed() {
-	brew info "${1}" >/dev/null 2>/dev/null
+_brew_cask_is_installed() {
+	brew info --cask "${1}" >/dev/null 2>&1
 }
 
 _on_missing() {
@@ -84,15 +84,15 @@ red() {
 
 
 msg_installing() {
-	printf " ## ----> Installing $(yellow ${1})..."
+	printf " ## ----> Installing %s..." "$(yellow "${1}")"
 }
 
 msg_install_ok() {
-	printf " ## ----> $(yellow ${1}) was $(green installed successfully)\n"
+	printf " ## ----> %s was %s\n" "$(yellow "${1}")" "$(green "installed successfully")"
 }
 
 msg_install_err() {
-	printf " ## ----> $(yellow ${1}) installation has $(red failed)\n"
+	printf " ## ----> %s installation has %s\n" "$(yellow "${1}")" "$(red failed)"
 	return 1
 }
 
@@ -108,15 +108,14 @@ nl() {
 }
 
 _run() {
-	name=${1}
-	msg_installing ${1}
+	msg_installing "${1}"
 	printf "\n"
 	if ${2} ; then
-		msg_install_ok ${1}
+		msg_install_ok "${1}"
 		return 0
 
 	fi
-	msg_install_err ${1}
+	msg_install_err "${1}"
 	return 1
 }
 
@@ -197,7 +196,7 @@ _install_gh_auth() {
 }
 
 _install_zen_browser() {
-	if _is_on_mac && ! _brew_is_installed zen-browser; then
+	if _is_on_mac && ! _brew_cask_is_installed zen-browser; then
 		brew install --cask zen-browser
 	fi
 
@@ -250,15 +249,13 @@ _install_dotfiles() {
 	if _is_on_mac; then
 		echo "placing mac things"
 		./stow.sh zsh
-		./stow.sh yabai
 		./stow.sh tmux
-		./stow.sh skhd
 		./stow.sh sketchybar
 		./stow.sh nvim
 		./stow.sh ghostty_mac
 		./stow.sh aerospace
-		./stow.sh ghostty_mac
 		./stow.sh wezterm_mac
+		./stow.sh pi-coding-agent
 	fi
 
 	if _is_on_arch; then
@@ -346,10 +343,9 @@ _install_oh_my_zsh() {
 }
 
 _install_zoom() {
-	if _is_on_mac && ! _brew_is_installed zoom; then
-		brew install zoom
+	if _is_on_mac && ! _brew_cask_is_installed zoom; then
+		brew install --cask zoom
 	fi
-	# _on_missing zoom _on_mac brew install zoom
 }
 
 _install_docker() {
@@ -369,38 +365,14 @@ _install_docker() {
 	fi
 }
 
-_install_yabai() {
+_install_aerospace() {
 	if ! _is_on_mac; then
 		return 0
 	fi
-	if _which yabai; then
+	if _which aerospace; then
 		return 0
 	fi
-	brew install koekeishiya/formulae/yabai
-
-	yabai --install-service
-
-	MESSAGE=$(cat<<EOT
-yabai is installed but not yet active until you set the relevant sudoers things.
-consult the official guide here: https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)
-afterwards activate yabai (& skhd) by running 'yabai --start-service && skhd --start-service'
-EOT
-)
-
-	msg_fenced "${MESSAGE}"
-}
-
-_install_skhd() {
-	if ! _is_on_mac; then
-		return 0
-	fi
-	if _which skhd; then
-		return 0
-	fi
-	brew install koekeishiya/formulae/skhd
-
-	skhd --install-service
-	msg_fenced "when ready, run 'skhd --start-service'"
+	brew install --cask nikitabobko/tap/aerospace
 }
 
 _install_fonts() {
@@ -447,9 +419,21 @@ _install_jj() {
 	_on_missing jj _on_arch yay -S jujutsu
 }
 
-_install_delta() {
-	_on_missing delta _on_mac brew install delta
-	_on_missing delta _on_arch pacman -S git-delta
+_install_pi() {
+	if _which pi; then
+		return 0
+	fi
+	curl -fsSL https://pi.dev/install.sh | sh
+}
+
+_install_entr() {
+	_on_missing entr _on_mac brew install entr
+	_on_missing entr _on_arch yay -S --noconfirm entr
+}
+
+_install_chafa() {
+	_on_missing chafa _on_mac brew install chafa
+	_on_missing chafa _on_arch yay -S --noconfirm chafa
 }
 
 ## Run installations
@@ -474,8 +458,7 @@ _run zsh _install_zsh \
 	&& _run "oh-my-zsh" _install_oh_my_zsh
 _run zoom _install_zoom
 _run docker _install_docker
-_run yabai _install_yabai
-_run skhd _install_skhd
+_run aerospace _install_aerospace
 _run fonts _install_fonts
 _run sketchybar _install_sketchybar
 _run yq _install_yq
@@ -483,3 +466,6 @@ _run rg _install_rg
 _run htop _install_htop
 _run fd _install_fd
 _run jj _install_jj
+_run pi _install_pi
+_run entr _install_entr
+_run chafa _install_chafa

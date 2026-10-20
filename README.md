@@ -13,5 +13,5 @@ If you are not me and you are seeing this - go away.
 Run the following. I hope that it'll work.
 
 ```shell
-> curl https://raw.githubusercontent.com/Shacham6/install_script/refs/heads/main/install_script.sh | sh
+> curl https://raw.githubusercontent.com/Shacham6/install_script/refs/heads/main/install_script.sh | bash
 ```
